@@ -162,16 +162,6 @@ namespace libcv
         remap(left, left, m_mx1, m_my1, INTER_LINEAR, BORDER_CONSTANT, Scalar());
         remap(right, right, m_mx2, m_my2, INTER_LINEAR, BORDER_CONSTANT, Scalar());
 
-        /*
-        StereoSGBM bm;
-        bm.minDisparity = 0;
-        bm.numberOfDisparities = 64;
-        bm.SADWindowSize = 64;
-        bm.preFilterCap = 30;
-        bm.uniquenessRatio = 0;
-        bm.fullDP = true;
-        */
-
         StereoBM bm(CV_STEREO_BM_BASIC, 64, 65);
         bm.state->preFilterSize     = 5;
         bm.state->preFilterCap      = 10;
