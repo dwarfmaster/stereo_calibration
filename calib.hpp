@@ -28,7 +28,7 @@ namespace libcv
              */
             void start(int nx, int ny, float size, CvSize img);
             void end();
-            bool compute(IplImage* i1, IplImage* i2, bool gray = false);
+            bool compute(const cv::Mat& i1, const cv::Mat& i2, bool gray = false);
 
             void transform(cv::Mat& left, cv::Mat& right);
 
@@ -50,7 +50,7 @@ namespace libcv
             cv::Mat m_mx1, m_mx2, m_my1, m_my2;
 
             /* Internal functions */
-            std::vector<cv::Point2f> computeOne(IplImage* img, bool gr = false, const std::string& win = "");
+            std::vector<cv::Point2f> computeOne(const cv::Mat& img, bool gr = false, const std::string& win = "");
     };
 }
 

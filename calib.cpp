@@ -109,7 +109,7 @@ namespace libcv
         initUndistortRectifyMap(CM2, D2, R2, P2, m_imgSize, CV_32FC1, m_mx2, m_my2);
     }
 
-    bool CalibCam::compute(IplImage* i1, IplImage* i2, bool gray)
+    bool CalibCam::compute(const cv::Mat& i1, const cv::Mat& i2, bool gray)
     {
         std::vector<Point2f> left  = computeOne(i1, gray, "Left");
         std::vector<Point2f> right = computeOne(i2, gray, "Right");
@@ -129,7 +129,7 @@ namespace libcv
         return false;
     }
 
-    std::vector<Point2f> CalibCam::computeOne(IplImage* img, bool gr, const std::string& win)
+    std::vector<Point2f> CalibCam::computeOne(const cv::Mat& img, bool gr, const std::string& win)
     {
         Mat imgmat(img);
         Mat gray;

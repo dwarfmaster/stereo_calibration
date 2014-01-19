@@ -18,15 +18,13 @@ int main()
         std::string left, right;
         iss >> left >> right;
 
-        IplImage* imgl  = cvLoadImage(left.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
-        IplImage* imgr = cvLoadImage(right.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
+        cv::Mat imgl  = cv::imread(left, CV_LOAD_IMAGE_GRAYSCALE);
+        cv::Mat imgr = cv::imread(right, CV_LOAD_IMAGE_GRAYSCALE);
         if(calib.compute(imgl, imgr, true))
             std::cout << "Computing pictures " << left << " and " << right << std::endl;
         else
             std::cout << "Couldn't compute pictures " << left << " and " << right << std::endl;
 
-        cvRelease((void**)&imgl);
-        cvRelease((void**)&imgr);
         while((char)cvWaitKey(0) != ' ');
     }
 
