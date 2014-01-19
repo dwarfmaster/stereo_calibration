@@ -17,36 +17,29 @@ int main()
         iss >> left >> right;
 
         std::cout << "Remapping " << left << " and " << right << std::endl;
-        IplImage* imgl  = cvLoadImage(left.c_str());
-        IplImage* imgr = cvLoadImage(right.c_str());
-        cv::Mat imgml(imgl);
-        cv::Mat imgmr(imgr);
-        cv::cvtColor(imgml, imgml, CV_BGR2GRAY);
-        cv::cvtColor(imgmr, imgmr, CV_BGR2GRAY);
+        cv::Mat imgml = cv::imread(left,  cv::IMREAD_GRAYSCALE);
+        cv::Mat imgmr = cv::imread(right, cv::IMREAD_GRAYSCALE);
         calib.transform(imgml, imgmr);
 
-        cv::cvtColor(imgml, imgml, CV_GRAY2BGR);
-        cv::cvtColor(imgmr, imgmr, CV_GRAY2BGR);
-        IplImage imgpl = imgml;
-        IplImage imgpr = imgmr;
+        cv::Mat imgpl, imgpr;
+        cv::cvtColor(imgml, imgpl, CV_GRAY2BGR);
+        cv::cvtColor(imgmr, imgpr, CV_GRAY2BGR);
         for(size_t i = 0; i < 480; i += 16) {
-            cvLine(&imgpl, cv::Point(0, i),
-                    cv::Point(640, i), CV_RGB(0, 255, 0));
-            cvLine(&imgpr, cv::Point(0, i),
-                    cv::Point(640, i), CV_RGB(0, 255, 0));
+            cv::line(imgpl, cv::Point(0, i),
+                    cv::Point(640, i), cv::Scalar(0, 255, 0));
+            cv::line(imgpr, cv::Point(0, i),
+                    cv::Point(640, i), cv::Scalar(0, 255, 0));
         }
-        cvShowImage("Left", &imgpl);
-        cvShowImage("Right", &imgpr);
+        cv::imshow("Left",  imgpl);
+        cv::imshow("Right", imgpr);
         
         // Saving
         std::string path = "trans/" + left;
-        cvSaveImage(path.c_str(), (void*)&imgpl);
+        cv::imwrite(path, imgml);
         path = "trans/" + right;
-        cvSaveImage(path.c_str(), (void*)&imgpr);
+        cv::imwrite(path, imgmr);
 
-        cvRelease((void**)&imgl);
-        cvRelease((void**)&imgr);
-        while((char)cvWaitKey(0) != ' ');
+        while((char)cv::waitKey() != ' ');
     }
 
     return 0;
