@@ -12,6 +12,11 @@ using namespace cv;
 
 namespace libcv
 {
+    /* Lvl of gray per meter. 
+     * TODO find value.
+     */
+    const float lvlpermeter = 1.0f;
+
     CalibCam::CalibCam()
         : m_display(true)
     {}
@@ -157,10 +162,11 @@ namespace libcv
             return std::vector<Point2f>();
     }
 
-    void CalibCam::transform(Mat& left, Mat& right)
+    void CalibCam::process(const Mat& left, const Mat& right)
     {
-        remap(left, left, m_mx1, m_my1, INTER_LINEAR, BORDER_CONSTANT, Scalar());
-        remap(right, right, m_mx2, m_my2, INTER_LINEAR, BORDER_CONSTANT, Scalar());
+        Mat tmpl, tmpr;
+        remap(left,  tmpl, m_mx1, m_my1, INTER_LINEAR, BORDER_CONSTANT, Scalar());
+        remap(right, tmpr, m_mx2, m_my2, INTER_LINEAR, BORDER_CONSTANT, Scalar());
 
         StereoBM bm(CV_STEREO_BM_BASIC, 64, 65);
         bm.state->preFilterSize     = 5;
@@ -172,11 +178,52 @@ namespace libcv
         bm.state->speckleRange      = 0;
 
         Mat disp, vdisp;
-        bm(left, right, disp);
+        bm(tmpl, tmpr, disp);
         normalize(disp, vdisp, 0, 255, NORM_MINMAX, CV_8UC1);
         imshow("Disparity", vdisp);
-    }
-}
 
+        computeDists(vdisp);
+    }
+            
+    void CalibCam::computeDists(const cv::Mat& disp)
+    {
+        m_dists = Mat::zeros(3, 5, CV_32F);
+        for(int x = 0; x < 5; ++x) {
+            for(int y = 0; y < 3; ++y) {
+                Mat sub = disp(Range(y*160, y*160+159),
+                        Range(x*128, x*128+127));
+                histoFill(y, x, sub);
+            }
+        }
+
+        /* Print m_dists for debug */
+        for(int y = 0; y < 3; ++y) {
+            std::cout << "| ";
+            for(int x = 0; x < 5; ++x)
+                std::cout << m_dists.at<float>(y,x) << " ";
+            std::cout << "|" << std::endl;
+        }
+        std::cout << std::endl;
+    }
+
+    void CalibCam::histoFill(int y, int x, const cv::Mat& part)
+    {
+        Mat hist;
+        float range[] = {0, 256};
+        const float* histRange = { range };
+        int histSize = 256;
+        calcHist(&part, 1, 0, Mat(), hist, 1, &histSize, &histRange, true, false);
+
+        /* Cumulate hist. */
+        for(int i = 1; i < 256; ++i)
+            hist.at<float>(i) += hist.at<float>(i-1);
+        float lvl = 0.95 * hist.at<float>(255); /* Allow a 5 percent error in max. */
+
+        int i;
+        for(i = 0; hist.at<float>(i) < lvl; ++i);
+        m_dists.at<float>(y, x) = (float)i * lvlpermeter;
+    }
+
+}
 
 

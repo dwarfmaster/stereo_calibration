@@ -30,7 +30,7 @@ namespace libcv
             void end();
             bool compute(const cv::Mat& i1, const cv::Mat& i2, bool gray = false);
 
-            void transform(cv::Mat& left, cv::Mat& right);
+            void process(const cv::Mat& left, const cv::Mat& right);
 
         private:
             int m_nx;
@@ -49,8 +49,15 @@ namespace libcv
             cv::Mat R1, R2, P1, P2;
             cv::Mat m_mx1, m_mx2, m_my1, m_my2;
 
+            /* A 5x3 matrix with the dists in m (double). */
+            cv::Mat m_dists;
+
             /* Internal functions */
             std::vector<cv::Point2f> computeOne(const cv::Mat& img, bool gr = false, const std::string& win = "");
+            /* Fill m_dists according to the disparity map passed in parameters. */
+            void computeDists(const cv::Mat& disp);
+            /* Fill an element of m_dists with a part of the disparity map. */
+            void histoFill(int y, int x, const cv::Mat& part);
     };
 }
 
