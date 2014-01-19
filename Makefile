@@ -4,7 +4,7 @@ CXXFLAGS=-Wall -Wextra -pedantic -std=c++11 `pkg-config --cflags opencv`
 LDFLAGS=`pkg-config --libs opencv`
 OBJS=calib.o
 
-all : test
+all : test norm
 
 norm : $(PROG)
 
