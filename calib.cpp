@@ -162,12 +162,12 @@ namespace libcv
             return std::vector<Point2f>();
     }
 
-    Mat global;
-    void onMouse(int event, int x, int y, int, void*)
+    void onMouse(int event, int x, int y, int, void* mat)
     {
         if(event != CV_EVENT_LBUTTONDOWN)
             return;
-        std::cout << "(" << x << ";" << y << ") = " << global.at<float>(x,y) << std::endl;
+        Mat* m = (Mat*)mat;
+        std::cout << "(" << x << ";" << y << ") = " << (int)m->at<unsigned char>(x,y) << std::endl;
     }
 
     void CalibCam::process(const Mat& left, const Mat& right)
@@ -185,16 +185,16 @@ namespace libcv
         bm.state->speckleWindowSize = 0;
         bm.state->speckleRange      = 0;
 
-        Mat disp, vdisp;
-        bm(tmpl, tmpr, disp, CV_32F);
-        normalize(disp, vdisp, 0, 255, NORM_MINMAX, CV_8UC1);
+        static Mat* disp = new Mat;
+        Mat vdisp;
+        bm(tmpl, tmpr, *disp, CV_32F);
+        normalize(*disp, vdisp, 0, 255, NORM_MINMAX, CV_8UC1);
         imshow("Normalized Disparity", vdisp);
-        // disp.convertTo(disp, CV_8U, 255, 0);
-        global = disp;
-        imshow("Disparity", disp);
-        setMouseCallback("Disparity", onMouse, NULL);
+        disp->convertTo(*disp, CV_8U, 1, 1);
+        imshow("Disparity", *disp);
+        setMouseCallback("Disparity", onMouse, disp);
 
-        computeDists(vdisp);
+        computeDists(*disp);
     }
             
     void CalibCam::computeDists(const cv::Mat& disp)
