@@ -162,6 +162,14 @@ namespace libcv
             return std::vector<Point2f>();
     }
 
+    Mat global;
+    void onMouse(int event, int x, int y, int, void*)
+    {
+        if(event != CV_EVENT_LBUTTONDOWN)
+            return;
+        std::cout << "(" << x << ";" << y << ") = " << global.at<float>(x,y) << std::endl;
+    }
+
     void CalibCam::process(const Mat& left, const Mat& right)
     {
         Mat tmpl, tmpr;
@@ -178,9 +186,13 @@ namespace libcv
         bm.state->speckleRange      = 0;
 
         Mat disp, vdisp;
-        bm(tmpl, tmpr, disp);
+        bm(tmpl, tmpr, disp, CV_32F);
         normalize(disp, vdisp, 0, 255, NORM_MINMAX, CV_8UC1);
-        imshow("Disparity", vdisp);
+        imshow("Normalized Disparity", vdisp);
+        // disp.convertTo(disp, CV_8U, 255, 0);
+        global = disp;
+        imshow("Disparity", disp);
+        setMouseCallback("Disparity", onMouse, NULL);
 
         computeDists(vdisp);
     }
