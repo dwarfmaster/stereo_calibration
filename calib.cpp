@@ -202,7 +202,7 @@ namespace libcv
         bm.state->preFilterCap      = 10;
         bm.state->minDisparity      = 0;
         bm.state->textureThreshold  = 0;
-        bm.state->uniquenessRatio   = 5;
+        bm.state->uniquenessRatio   = 0;
         bm.state->speckleWindowSize = 0;
         bm.state->speckleRange      = 0;
 
