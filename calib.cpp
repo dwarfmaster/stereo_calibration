@@ -176,6 +176,18 @@ namespace libcv
         remap(left,  tmpl, m_mx1, m_my1, INTER_LINEAR, BORDER_CONSTANT, Scalar());
         remap(right, tmpr, m_mx2, m_my2, INTER_LINEAR, BORDER_CONSTANT, Scalar());
 
+        cv::Mat imgpl, imgpr;
+        cv::cvtColor(tmpl, imgpl, CV_GRAY2BGR);
+        cv::cvtColor(tmpr, imgpr, CV_GRAY2BGR);
+        for(size_t i = 0; i < 480; i += 16) {
+            cv::line(imgpl, cv::Point(0, i),
+                    cv::Point(640, i), cv::Scalar(0, 255, 0));
+            cv::line(imgpr, cv::Point(0, i),
+                    cv::Point(640, i), cv::Scalar(0, 255, 0));
+        }
+        cv::imshow("Left",  imgpl);
+        cv::imshow("Right", imgpr);
+
         StereoBM bm(CV_STEREO_BM_BASIC, 64, 65);
         bm.state->preFilterSize     = 5;
         bm.state->preFilterCap      = 10;
