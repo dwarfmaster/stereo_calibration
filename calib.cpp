@@ -188,6 +188,15 @@ namespace libcv
         cv::imshow("Left",  imgpl);
         cv::imshow("Right", imgpr);
 
+        static int count = 0;
+        std::ostringstream oss;
+        oss << "trans/save" << count << "l.png";
+        cv::imwrite(oss.str(), tmpl);
+        oss.str("");
+        oss << "trans/save" << count << "r.png";
+        cv::imwrite(oss.str(), tmpr);
+        ++count;
+
         StereoBM bm(CV_STEREO_BM_BASIC, 64, 65);
         bm.state->preFilterSize     = 5;
         bm.state->preFilterCap      = 10;
