@@ -217,7 +217,7 @@ namespace libcv
 
         computeDists(*disp);
     }
-            
+
     void CalibCam::computeDists(const cv::Mat& disp)
     {
         m_dists = Mat::zeros(3, 5, CV_32F);
@@ -257,6 +257,65 @@ namespace libcv
         m_dists.at<float>(y, x) = (float)i * lvlpermeter;
     }
 
+    void CalibCam::process2(const cv::Mat& left, const cv::Mat& right)
+    {
+        /* Constants. */
+        const int threshold = 50;
+        const int lineH = 3;
+
+        /* Finding points of interest in left picture. */
+        cv::Mat rmpLeft;
+        remap(left, rmpLeft, m_mx1, m_my1, INTER_LINEAR, BORDER_CONSTANT, Scalar());
+        std::vector<KeyPoint> leftP;
+        FAST(rmpLeft, leftP, threshold, true);
+
+        /* Finding points of interest in right picture. */
+        cv::Mat rmpRight;
+        remap(right, rmpRight, m_mx2, m_my2, INTER_LINEAR, BORDER_CONSTANT, Scalar());
+        std::vector<KeyPoint> rightP;
+        FAST(rmpRight, rightP, threshold, true);
+
+        /* Sorting them by lines. */
+        std::vector<std::vector<Point2f>> leftLines;
+        leftLines.resize(480/lineH);
+        for(KeyPoint kp : leftP)
+            leftLines[kp.pt.y/lineH].push_back(kp.pt);
+
+        std::vector<std::vector<Point2f>> rightLines;
+        rightLines.resize(480/lineH);
+        for(KeyPoint kp : rightP)
+            rightLines[kp.pt.y/lineH].push_back(kp.pt);
+
+        /* Creating pairs. */
+        std::vector<std::pair<Point2f,Point2f>> pairs;
+        /* TODO */
+
+        /* Computing distances. */
+        /* TODO */
+
+        /* Drawing results. */
+        cvtColor(rmpLeft, rmpLeft, CV_GRAY2BGR);
+        cvtColor(rmpRight, rmpRight, CV_GRAY2BGR);
+
+        for(size_t i = 0; i < 480; i += 16) {
+            cv::line(rmpLeft, cv::Point(0, i),
+                    cv::Point(640, i), cv::Scalar(0, 0, 255));
+            cv::line(rmpRight, cv::Point(0, i),
+                    cv::Point(640, i), cv::Scalar(0, 0, 255));
+        }
+
+        for(KeyPoint kp : leftP) {
+            circle(rmpLeft, kp.pt, kp.size,
+                    Scalar(kp.pt.y / 480.0 * 255.0, 255 - (kp.pt.y / 480.0 * 255.0), 0));
+        }
+        for(KeyPoint kp : rightP) {
+            circle(rmpRight, kp.pt, kp.size,
+                    Scalar(kp.pt.y / 480.0 * 255.0, 255 - (kp.pt.y / 480.0 * 255.0), 0));
+        }
+
+        imshow("Left", rmpLeft);
+        imshow("Right", rmpRight);
+    }
 }
 
 

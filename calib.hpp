@@ -32,6 +32,9 @@ namespace libcv
 
             void process(const cv::Mat& left, const cv::Mat& right);
 
+            /* Compute distance using the fast algorithm for finding points in both pictures. */
+            void process2(const cv::Mat& left, const cv::Mat& right);
+
         private:
             int m_nx;
             int m_ny;
