@@ -154,6 +154,12 @@ namespace libcv
             cvtColor(gray, imgmat, CV_GRAY2BGR);
             drawChessboardCorners(imgmat, Size(m_nx, m_ny), dup, found);
             imshow(win, imgmat);
+
+            static int count = 0;
+            std::ostringstream oss;
+            oss << "chess/subpix" << count << ".png";
+            imwrite(oss.str(), imgmat);
+            ++count;
         }
 
         if(found)
