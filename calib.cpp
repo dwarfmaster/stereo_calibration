@@ -197,10 +197,10 @@ namespace libcv
         static int count = 0;
         std::ostringstream oss;
         oss << "trans/save" << count << "l.png";
-        cv::imwrite(oss.str(), tmpl);
+        cv::imwrite(oss.str(), imgpl);
         oss.str("");
         oss << "trans/save" << count << "r.png";
-        cv::imwrite(oss.str(), tmpr);
+        cv::imwrite(oss.str(), imgpr);
 
         StereoBM bm(CV_STEREO_BM_BASIC, 64, 65);
         bm.state->preFilterSize     = 5;
