@@ -195,7 +195,6 @@ namespace libcv
         oss.str("");
         oss << "trans/save" << count << "r.png";
         cv::imwrite(oss.str(), tmpr);
-        ++count;
 
         StereoBM bm(CV_STEREO_BM_BASIC, 64, 65);
         bm.state->preFilterSize     = 5;
@@ -214,6 +213,11 @@ namespace libcv
         disp->convertTo(*disp, CV_8U, 1, 1);
         imshow("Disparity", *disp);
         setMouseCallback("Disparity", onMouse, disp);
+
+        oss.str("");
+        oss << "disp/result" << count << ".png";
+        imwrite(oss.str(), vdisp);
+        ++count;
 
         computeDists(*disp);
     }
